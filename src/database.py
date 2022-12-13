@@ -1,4 +1,5 @@
 import sqlite3
+
 from typing import Tuple
 
 
@@ -31,19 +32,25 @@ class Database:
 
     def insert_user(self, discord_id: str, fpl_id: str):
         """
-        Insert a new user into the `users` table.
+        Insert a new user into the `users` table, or update the
+        FPL ID of an existing user if they already exist in the
+        `users` table.
 
         Args:
-            discord_id (str): The Discord user ID of the user to insert.
-            fpl_id (str): The FPL user ID of the user to insert.
+            discord_id (str): The Discord user ID of the user to insert/update.
+            fpl_id (str): The FPL user ID of the user to insert/update.
         """
-        self.cursor.execute(
-            """
-            INSERT INTO users (discord_id, fpl_id)
-            VALUES (?, ?)
-            """,
-            (discord_id, fpl_id),
-        )
+        user = self.get_user(discord_id)
+        if user is None:
+            self.cursor.execute(
+                """
+                INSERT INTO users (discord_id, fpl_id)
+                VALUES (?, ?)
+                """,
+                (discord_id, fpl_id),
+            )
+        else:
+            self.update_user(discord_id, fpl_id)
         self.conn.commit()
 
     def update_user(self, discord_id: str, fpl_id: str):

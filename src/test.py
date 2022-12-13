@@ -1,9 +1,15 @@
 import unittest
+
 from unittest import mock
-from config import Config
-from database import Database
-import tempfile
+
 import os
+
+import tempfile
+
+
+from config import Config
+
+from database import Database
 
 
 class TestDatabase(unittest.TestCase):
@@ -60,6 +66,7 @@ class TestDatabase(unittest.TestCase):
         self.assertIsNone(self.db.get_user("456"))
 
 
+@mock.patch.object(Config, "TOKEN", "test_token")
 class TestConfig(unittest.TestCase):
     """A unit test class for the Config class."""
 
