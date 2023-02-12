@@ -2,7 +2,7 @@ version: 2.1
 
 jobs:
   build:
-    working_directory: ~/
+    working_directory: ~/src
     docker:
       - image: cimg/python:3.9.6
     steps:
@@ -11,9 +11,10 @@ jobs:
           name: "install requirements and run bot"
           command:  |
             pip install -r requirements.txt
+            python -c "import sqlite3; conn = sqlite3.connect(':memory:')"
             python src/bot.py
   test:
-    working_directory: ~/
+    working_directory: ~/src
     docker:
       - image: cimg/python:3.9.6
     steps:
