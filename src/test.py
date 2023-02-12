@@ -23,12 +23,14 @@ class TestDatabase(unittest.TestCase):
         # Create the full path to the database file
         db_path = os.path.join(self.temp_dir.name, "test.db")
 
-        # Create a new instance of the `Database` class, using the full path to the database file
+        # Create a new instance of the `Database` class, using the full
+        # path to the database file
         self.db = Database(db_path)
 
     def tearDown(self) -> None:
         """
-        Close the test database and delete the temporary directory after each test.
+        Close the test database and delete the temporary directory
+        after each test.
         """
         # Close the database connection
         self.db.conn.close()
@@ -71,7 +73,9 @@ class TestConfig(unittest.TestCase):
     """A unit test class for the Config class."""
 
     def setUp(self) -> None:
-        """Set up the test case by creating mock objects and a Config instance."""
+        """
+        Set up the test case by creating mock objects and a Config instance.
+        """
         self.mock_os_environ = mock.Mock()
         self.mock_os_environ.get.return_value = "test_token"
 
@@ -82,10 +86,13 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(self.config.TOKEN, self.mock_os_environ.get())
 
     def test_default_response(self) -> None:
-        """Test that the DEFAULT_RESPONSE attribute is set to the expected value."""
+        """
+        Test that the DEFAULT_RESPONSE attribute is set to the expected value.
+        """
         self.assertEqual(
             self.config.DEFAULT_RESPONSE,
-            "Sorry, I didn't understand your command. Type `+help` for a list of commands.",
+            "Sorry, I didn't understand your command."
+            " Type `+help` for a list of commands.",
         )
 
 

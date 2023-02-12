@@ -1,3 +1,6 @@
+import sqlite3
+
+
 import discord
 
 from discord.ext import commands
@@ -25,29 +28,40 @@ class Setup(commands.Cog):
         :return: None
         """
         try:
-            mention = ctx.author.mention
             discord_id: str = ctx.author.id
+            mention = ctx.author.mention
 
-            await self.database.insert_user(
-                discord_id, fpl_id
-            ) if fpl_id.isdigit() else await self.initial_setup(ctx)
-        except:
+            if fpl_id.isdigit():
+                self.database.insert_user(discord_id, fpl_id)
+            else:
+                raise TypeError("FPL id is not a digit")
+
             await ctx.send(
-                content=f"{mention}\n :thumbsdown: oops... something went wrong, please make sure your fpl id is a number, use **+setup help** for help finding your fpl id and **+help** for any other useful commands"
+                f"{mention} Thats all setup for you,\
+                try !help for commands to use!"
             )
+
+        except TypeError as T:
+            print(T)
+            await self.initial_setup(ctx)
+        except sqlite3.OperationalError as S:
+            print(S)
+            await ctx.send("Something went wrong, please contact an admin!")
 
     async def initial_setup(self, ctx: commands.Context) -> None:
         """
-        This function guides the user through the process of finding their FPL ID
-        and setting up their account.
+        This function guides the user through the process of finding
+        their FPL ID and setting up their account.
 
         :param ctx: The context of the command invocation.
         :return: None
         """
+        mention = ctx.author.mention
         embed = discord.Embed(title="Setup")
         embed.add_field(
             name="Intructions:",
-            value='Type **+setup "FPL id" ** \n if you do not know how to get your FPL id please type  **+XXX**',
+            value=f'{mention} Type **+setup "FPL id" ** \n if you do not know \
+            how to get your FPL id please type  **+XXX**',
         )
         await ctx.send(embed=embed)
 
