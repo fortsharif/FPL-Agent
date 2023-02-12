@@ -1,9 +1,9 @@
 import sqlite3
 
 
-import discord
+import discord # type: ignore
 
-from discord.ext import commands
+from discord.ext import commands # type: ignore
 
 
 from config import Config
