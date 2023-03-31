@@ -1,9 +1,11 @@
 __pycache__/
 
-data/
+db/
 
 fpl_env/
 
 .env
 
-Dockerfile
+.pytest_cache/
+
+.mypy_cache

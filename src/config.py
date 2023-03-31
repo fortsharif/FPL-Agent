@@ -1,7 +1,7 @@
 import os
 
 
-import discord # type: ignore
+import discord  # type: ignore
 
 
 class Config:

@@ -4,7 +4,7 @@ from typing import Tuple
 
 
 class Database:
-    def __init__(self, db="data/fpl.db"):
+    def __init__(self, db="db/fpl-bot.db"):
         """
         Initialize the `Database` class by creating a connection to
         the specified SQLite database and creating the tables if

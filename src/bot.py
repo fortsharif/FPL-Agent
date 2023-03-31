@@ -1,7 +1,7 @@
 import asyncio
 
 
-from discord.ext import commands # type: ignore
+from discord.ext import commands  # type: ignore
 
 from config import Config
 

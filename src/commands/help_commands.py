@@ -1,4 +1,4 @@
-from discord.ext import commands # type: ignore
+from discord.ext import commands  # type: ignore
 
 
 class Help(commands.Cog):

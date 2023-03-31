@@ -1,31 +1,67 @@
 version: 2.1
 
 jobs:
-  build:
-    working_directory: ~/src
+  build_docker:
+    working_directory: ~/fpl-bot-v2
     docker:
-      - image: sqlite3_db:latest
+      - image: docker:latest
     steps:
       - checkout
+      - setup_remote_docker
       - run:
-          name: "install requirements and run bot"
-          command:  |
-            pip install -r requirements.txt
-            python src/bot.py
-  test:
-    working_directory: ~/src
+          name: "Build Docker image"
+          command: |
+            docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+            docker build --tag fortsharif/fpl_db_ci:v2 \
+            .
+            docker push fortsharif/fpl_db_ci:v2
+  build:
+    working_directory: ~/fpl-bot-v2
     docker:
-      - image: sqlite3_db:latest
+      - image: fortsharif/fpl_db_ci:v2
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
     steps:
-      - checkout
+      - setup_remote_docker:
+          version: 20.10.14
+      - run:
+          name: "Start bot"
+          command: |
+            set -e
+            FPL_TOKEN=$FPL_TOKEN
+            docker run --name fpl-bot \
+            -e FPL_TOKEN=$FPL_TOKEN \
+            -d fortsharif/fpl_db_ci:v2 /bin/bash -c 'python src/bot.py'
+            sleep 10
+            if ! docker ps -f "name=fpl-bot" --format '{{.Names}}' | grep -q "fpl-bot"; then
+              echo "The bot failed to start"
+              exit 1
+            fi
+  test:
+    working_directory: ~/fpl-bot-v2
+    docker:
+      - image: fortsharif/fpl_db_ci:v2
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+    steps:
+      - setup_remote_docker:
+          version: 20.10.14
       - run:
           name: "Run Tests"
-          command: python src/test.py
+          command: |
+            docker run --rm --name fpl-bot-test \
+            fortsharif/fpl_db_ci:v2 python src/test.py
 
 workflows:
   build_and_test:
     jobs:
-      - build
+      - build_docker
+      - build:
+          requires:
+            - build_docker
       - test:
           requires:
+            - build_docker
             - build
